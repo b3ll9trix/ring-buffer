@@ -1,6 +1,6 @@
 #include <iostream>
 #include "RingBuffer.h"
-#include "RingBuffer.cpp"
+
 
 int main() {
     RingBuffer<int> cf = RingBuffer<int>(4);
