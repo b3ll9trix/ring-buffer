@@ -21,17 +21,50 @@ class RingBuffer {
             : buf_size(size), head(0), tail(0){
                 buffer.resize(size);
         }
+
         /// Destructor
         ~RingBuffer()= default;
-        /// put - puts element into the Buffer
-        void put(T new_value){
+
+        /// back - returns the head
+        const_reference back() const{
+            return buffer[head];
+        }
+        /// front - return the tail
+        const_reference front() const{
+            return buffer[tail];
+        }
+        /// [] Operator for Random Access
+        reference operator[](index_type index){
+            return buffer[index];
+        }
+        /// [] Operator for Random Access for cont Object
+        const_reference operator[](index_type index) const{
+            return buffer[index];
+        }
+        /// size - returns the size of the buffer
+        size_type size(){
+            return buf_size;
+        }
+        /// clear - resets the buffer
+        void clear(){
+            head = tail = 0;
+        }
+        /// empty - checks if all the data so far is already consumed
+        bool empty() const{
+            return head == tail;
+        }
+
+        /// push_back - puts element into the Buffer
+        void push_back(T new_value){
             buffer[head] = new_value;
             if(++head >= buf_size){
                 head = 0;
             }
         }
-        /// get - gets the oldest element from the Buffer
-        value_type get(){
+        /// pop_front - gets the oldest element from the Buffer
+        value_type pop_front(){
+            /// TODO: Exception Handling for precondition
+            //if (empty()){return -1;}
             if(tail+1 >= buf_size){
                 int currIndex = tail;
                 tail = 0;
@@ -45,28 +78,17 @@ class RingBuffer {
             std::vector<T> result;
             result.reserve(buf_size);
             for (int i=0; i < buf_size; i++) {
-                result.push_back(get());
+                result.push_back(pop_front());
             }
             return result;
         }
-        /// top - returns the head index
-        const_reference top() const{
-            return buffer[head];
-        }
-        /// [] Operator for Random Access
-        reference operator[](index_type index){
-            return buffer[index];
-        }
-        /// [] Operator for Random Access for cont Object
-        const_reference operator[](index_type index) const{
-            return buffer[index];
-        }
+
     private :
         /// Buffer
         std::vector<value_type> buffer;
         /// Buffer Size
         size_type buf_size;
-        /// Index of the top of the buffer
+        /// Index of the back of the buffer
         index_type head;
         /// Index of the bottom of the buffer
         index_type tail;

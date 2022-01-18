@@ -4,10 +4,10 @@
 
 int main() {
     RingBuffer<int> cf = RingBuffer<int>(4);
-    cf.put(9);
-    cf.put(10);
-    cf.put(11);
-    cf.put(12);
+    cf.push_back(9);
+    cf.push_back(10);
+    cf.push_back(11);
+    cf.push_back(12);
     auto f = cf.readAll();
     for (auto e: f) {
         std::cout << e;
@@ -17,13 +17,13 @@ int main() {
     std::cout << cf[2] << "test";
     std::cout << "\n";
 
-    std::cout << cf.get();
+    std::cout << cf.pop_front();
     std::cout << "\n";
 
-    std::cout << cf.top();
+    std::cout << cf.back();
 
     std::cout << "\n";
-    std::cout << cf.get();
+    std::cout << cf.pop_front();
 
     return 0;
 
