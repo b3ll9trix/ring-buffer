@@ -78,12 +78,6 @@ build CMakeFiles/src.dir/main.cpp.o: CXX_COMPILER__src_Debug /home/b3ll9trix/Job
   OBJECT_DIR = CMakeFiles/src.dir
   OBJECT_FILE_DIR = CMakeFiles/src.dir
 
-build CMakeFiles/src.dir/RingBuffer.cpp.o: CXX_COMPILER__src_Debug /home/b3ll9trix/Job/KIT/Assessment/ring_buffer/src/RingBuffer.cpp || cmake_object_order_depends_target_src
-  DEP_FILE = CMakeFiles/src.dir/RingBuffer.cpp.o.d
-  FLAGS = -g -std=gnu++14
-  OBJECT_DIR = CMakeFiles/src.dir
-  OBJECT_FILE_DIR = CMakeFiles/src.dir
-
 
 # =============================================================================
 # Link build statements for EXECUTABLE target src
@@ -92,7 +86,7 @@ build CMakeFiles/src.dir/RingBuffer.cpp.o: CXX_COMPILER__src_Debug /home/b3ll9tr
 #############################################
 # Link the executable src
 
-build src: CXX_EXECUTABLE_LINKER__src_Debug CMakeFiles/src.dir/main.cpp.o CMakeFiles/src.dir/RingBuffer.cpp.o
+build src: CXX_EXECUTABLE_LINKER__src_Debug CMakeFiles/src.dir/main.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/src.dir
   POST_BUILD = :
