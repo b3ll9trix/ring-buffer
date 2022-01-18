@@ -5,7 +5,7 @@
 #ifndef SRC_RINGBUFFER_H
 #define SRC_RINGBUFFER_H
 #include <vector>
-template<typename T>
+template<class T>
 class RingBuffer {
 
     typedef T          value_type;
