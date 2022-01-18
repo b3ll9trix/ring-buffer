@@ -41,8 +41,8 @@ for (int i=0; i < buf_size; i++) {
 }
 
 template<typename T>
-int RingBuffer<T>::top() const {
-    return head;
+const T& RingBuffer<T>::top() const {
+    return buffer[head];
 }
 
 template<typename T>
@@ -51,7 +51,7 @@ T& RingBuffer<T> :: operator[](int index){
 }
 
 template<typename T>
-T& RingBuffer<T> :: operator[](int index) const{
+const T& RingBuffer<T> :: operator[](int index) const{
     return buffer[index];
 }
 

@@ -21,11 +21,11 @@ class RingBuffer {
         /// TODO: Make it Const
         std::vector<T> readAll();
         /// top - returns the head index
-        int top() const;
+        const T &top() const;
         /// [] Operator for Random Access
         T &operator[](int index);
         /// [] Operator for Random Access for cont Object
-        T &operator[](int index) const;
+        const T &operator[](int index) const;
     private :
         /// Buffer
         std::vector<T> buffer;

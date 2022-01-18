@@ -4,7 +4,6 @@
 
 int main() {
     RingBuffer<int> cf = RingBuffer<int>(4);
-    //RingBuffer<int> cf = RingBuffer<int>(6);
     cf.put(9);
     cf.put(10);
     cf.put(11);
@@ -21,6 +20,9 @@ int main() {
     std::cout << cf.get();
     std::cout << "\n";
 
+    std::cout << cf.top();
+
+    std::cout << "\n";
     std::cout << cf.get();
 
     return 0;
