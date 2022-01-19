@@ -5,79 +5,96 @@
 #ifndef SRC_RINGBUFFER_H
 #define SRC_RINGBUFFER_H
 #include <vector>
-template<class T>
-class RingBuffer {
+#include <armadillo>
+#include "Exceptions.h"
 
-    typedef T          value_type;
-    typedef T         *pointer;
-    typedef const T   *const_pointer;
-    typedef T         &reference;
-    typedef const T   &const_reference;
+template <typename T>
+class RingBuffer;
+
+template<template<typename> class T, class X>
+class RingBuffer<T<X>> {
+
+    typedef T<X>         value_t;
+    typedef T<X>         *value_ptr;
+    typedef const T<X>   *const_value_ptr;
+    typedef T<X>         &reference;
+    typedef const T<X>   &const_reference;
     typedef int index_type, size_type;
 
+
+
     public :
+        /// buffer_mutex
+        std::mutex *buffer_mutex;
+
         /// Constructor
         explicit RingBuffer(size_type size)
-            : buf_size(size), head(0), tail(0){
-                buffer.resize(size);
+            : buf_size_(size), back_(0), front_(0), contents_size_(0){
+                buffer_.resize(size);
+                buffer_mutex = new std::mutex();
         }
 
         /// Destructor
         ~RingBuffer()= default;
 
-        /// back - returns the head
+        /// back - returns the most recently pushed
         const_reference back() const{
-            return buffer[head];
+            index_type back_cpy = back_;
+            if(back_cpy - 1 < 0) {
+                back_cpy = buf_size_-1;
+            }
+            return buffer_[back_cpy];
         }
-        /// front - return the tail
+        /// front - returns the least recently pushed
         const_reference front() const{
-            return buffer[tail];
+            return buffer_[front_];
         }
         /// [] Operator for Random Access
         reference operator[](index_type index){
-            return buffer[index];
+            return buffer_[index];
         }
         /// [] Operator for Random Access for cont Object
         const_reference operator[](index_type index) const{
-            return buffer[index];
+            return buffer_[index];
         }
         /// size - returns the size of the buffer
         size_type size(){
-            return buf_size;
+            return buf_size_;
         }
         /// clear - resets the buffer
         void clear(){
-            head = tail = 0;
+            back_ = front_ = contents_size_ = 0;
         }
         /// empty - checks if all the data so far is already consumed
         bool empty() const{
-            return head == tail;
+            return contents_size_ == 0;
         }
 
         /// push_back - puts element into the Buffer
-        void push_back(T new_value){
-            buffer[head] = new_value;
-            if(++head >= buf_size){
-                head = 0;
+        void push_back(T<X> new_value){
+            buffer_[back_] = new_value;
+            increment_back();
+            if(++contents_size_ > buf_size_){
+                increment_front();
+                contents_size_ = buf_size_;
             }
         }
-        /// pop_front - gets the oldest element from the Buffer
-        value_type pop_front(){
-            /// TODO: Exception Handling for precondition
-            //if (empty()){return -1;}
-            if(tail+1 >= buf_size){
-                int currIndex = tail;
-                tail = 0;
-                return buffer[currIndex];
+        /// pop_front - gets the least recently pushed element from the Buffer
+        value_t pop_front() noexcept(false){
+            if (empty()) {
+                throw BufferEmptyException();
             }
-            return buffer[tail++];
+            value_t currData = buffer_[front_];
+            increment_front();
+            --contents_size_;
+            return currData;
         }
         /// readAll - Reads all elements of the Buffer at the time
         /// TODO: Make it Const
-        std::vector<value_type> readAll(){
-            std::vector<T> result;
-            result.reserve(buf_size);
-            for (int i=0; i < buf_size; i++) {
+        std::vector<value_t> readAll(){
+            std::vector<T<X>> result;
+            result.reserve(buf_size_);
+            for (int i=0; i < buf_size_; i++) {
                 result.push_back(pop_front());
             }
             return result;
@@ -85,13 +102,29 @@ class RingBuffer {
 
     private :
         /// Buffer
-        std::vector<value_type> buffer;
+        std::vector<value_t> buffer_;
         /// Buffer Size
-        size_type buf_size;
-        /// Index of the back of the buffer
-        index_type head;
-        /// Index of the bottom of the buffer
-        index_type tail;
+        size_type buf_size_;
+        /// Space in buffer to be filled next
+        index_type back_;
+        /// Space in buffer to be popped next
+        index_type front_;
+        /// No of elements in the buffer
+        int contents_size_;
+
+        ///Helper Function
+        /// Increment Back
+        void increment_back(){
+            if(++back_ == buf_size_) {
+                back_ =0;
+            }
+        }
+        /// Increment Front
+        void increment_front(){
+            if(++front_ == buf_size_) {
+                front_ =0;
+            }
+        }
 
 };
 #endif //SRC_RINGBUFFER_H
