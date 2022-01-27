@@ -74,6 +74,7 @@ class RingBuffer<T<X>> {
         void push_back(T<X> new_value){
             buffer_[back_] = new_value;
             increment_back();
+            //Whenever an older value is over-written by a new value, the front has to move so that it points to the next oldest data
             if(++contents_size_ > buf_size_){
                 increment_front();
                 contents_size_ = buf_size_;

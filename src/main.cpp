@@ -1,24 +1,34 @@
 #include <iostream>
+#include <thread>
+#include <vector>
 #include "RingBuffer.h"
 #include "Frame.h"
-#include <thread>
 
 typedef int frame_rate_t;
 typedef std::string process_message_t;
 
 bool g_ready = false;
 
+
 using namespace std::chrono_literals;
 /// produce - produces frame every `frame_rate` seconds and pushes into the buffer infinitely
 [[noreturn]] void produce(frame_rate_t frame_rate, RingBuffer<Frame<int>> &buffer){
     int i = 0;
     while(true){
-        Frame<int> frame = Frame<int>(i);
+        std::vector<int> imageFrame;
+        int len =0;
+        //Dummy Array
+        while(len < g_frame_len) {
+            imageFrame.push_back(i);
+            i++;
+            len++;
+        }
+        Frame<int> frame = Frame<int>(imageFrame);
         buffer.buffer_mutex->lock();
         buffer.push_back(frame);
         buffer.buffer_mutex->unlock();
         g_ready = true;
-        std::cout << "Pushed " << frame.data() << "\n";
+        std::cout << "Pushed " << frame.to_string() << "\n";
         std::this_thread::sleep_for(frame_rate*1s);
         i += 7;
     }
@@ -41,14 +51,9 @@ using namespace std::chrono_literals;
             continue;
         }
         //Dummy processing to see if the number is even or odd
-        if (frame.data() % 2 ==0){
-            process_message_t message = "Data " + std::to_string(frame.data())+ " at Frame#" + std::to_string(frame.number()) + " is Even. " + "Timestamp:" + frame.timestamp();
-            std::cout<<message;
-        }
-        else {
-            process_message_t message = "Data " + std::to_string(frame.data())+ " at Frame#" + std::to_string(frame.number()) + " is Odd. " + "Timestamp:" + frame.timestamp();
-            std::cout << message;
-        }
+        process_message_t message = "Average of [" + frame.to_string() + "] at Frame#" + std::to_string(frame.number()) + " is " + frame.process()+ " Timestamp:" + frame.timestamp();
+        std::cout<<message;
+
     }
 }
 
