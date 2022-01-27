@@ -60,7 +60,6 @@ using namespace std::chrono_literals;
 int main() {
 
     //1. Initialization of the Buffer
-    //TODO: Template Overloading
     int buffer_size, frame_rate;
     std::cout << "Buffer Size:";
     std::cin >> buffer_size;
