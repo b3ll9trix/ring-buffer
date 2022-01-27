@@ -50,7 +50,6 @@ using namespace std::chrono_literals;
             g_ready = false;
             continue;
         }
-        //Dummy processing to see if the number is even or odd
         process_message_t message = "Average of [" + frame.to_string() + "] at Frame#" + std::to_string(frame.number()) + " is " + frame.process()+ " Timestamp:" + frame.timestamp();
         std::cout<<message;
 
