@@ -12,7 +12,7 @@ class BufferEmptyException : public std::exception{
 public:
     ///Constructor
     explicit BufferEmptyException()
-        :message_("err:buffer is empty. nothing to process.\n"){
+        :message_("waiting:buffer is empty. nothing to process.\n"){
     }
     const char* what() const throw(){
         return message_.c_str();

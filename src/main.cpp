@@ -14,13 +14,13 @@ using namespace std::chrono_literals;
     int i = 0;
     while(true){
         Frame<int> frame = Frame<int>(i);
-
-        std::unique_lock<std::mutex> ul(*buffer.buffer_mutex);
+        buffer.buffer_mutex->lock();
         buffer.push_back(frame);
+        buffer.buffer_mutex->unlock();
         g_ready = true;
-        i++;
         std::cout << "Pushed " << frame.data() << "\n";
         std::this_thread::sleep_for(frame_rate*1s);
+        i += 7;
     }
 }
 
@@ -36,20 +36,18 @@ using namespace std::chrono_literals;
             frame = buffer.pop_front();
         }
         catch(BufferEmptyException &exception){
-            std::cout<< exception.what()<<std::flush;
+            std::cout<< exception.what();
             g_ready = false;
             continue;
         }
         //Dummy processing to see if the number is even or odd
         if (frame.data() % 2 ==0){
             process_message_t message = "Data " + std::to_string(frame.data())+ " at Frame#" + std::to_string(frame.number()) + " is Even. " + "Timestamp:" + frame.timestamp();
-            std::cout << message;
-            std::cout << std::to_string(frame.data()) <<"\n";
+            std::cout<<message;
         }
         else {
             process_message_t message = "Data " + std::to_string(frame.data())+ " at Frame#" + std::to_string(frame.number()) + " is Odd. " + "Timestamp:" + frame.timestamp();
             std::cout << message;
-            std::cout << std::to_string(frame.data()) << "\n";
         }
     }
 }
@@ -59,11 +57,16 @@ int main() {
 
     //1. Initialization of the Buffer
     //TODO: Template Overloading
-    RingBuffer<Frame<int>> cb = RingBuffer<Frame<int>>(4);
+    int buffer_size, frame_rate;
+    std::cout << "Buffer Size:";
+    std::cin >> buffer_size;
+    std::cout << "Frame Rate in seconds:";
+    std::cin >>frame_rate;
+    RingBuffer<Frame<int>> cb = RingBuffer<Frame<int>>(buffer_size);
 
 
     //2. Produce - Non blocking
-    std::thread thread1(produce,1, std::ref(cb));
+    std::thread thread1(produce,frame_rate, std::ref(cb));
 
     //3. Consumer - Non blocking
     std::thread thread2(consume, std::ref(cb));
