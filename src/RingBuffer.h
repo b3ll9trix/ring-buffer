@@ -74,6 +74,7 @@ class RingBuffer<T<X>> {
         void push_back(T<X> new_value){
             buffer_[back_] = new_value;
             increment_back();
+            //Whenever an older value is over-written by a new value, the front has to move so that it points to the next oldest data
             if(++contents_size_ > buf_size_){
                 increment_front();
                 contents_size_ = buf_size_;
@@ -89,9 +90,8 @@ class RingBuffer<T<X>> {
             --contents_size_;
             return currData;
         }
-        /// readAll - Reads all elements of the Buffer at the time
-        /// TODO: Make it Const
-        std::vector<value_t> readAll(){
+        /// copy - copies all elements of the Buffer at the time
+        std::vector<value_t> copy(){
             std::vector<T<X>> result;
             result.reserve(buf_size_);
             for (int i=0; i < buf_size_; i++) {
@@ -112,7 +112,7 @@ class RingBuffer<T<X>> {
         /// No of elements in the buffer
         int contents_size_;
 
-        ///Helper Function
+        ///Helper Functions
         /// Increment Back
         void increment_back(){
             if(++back_ == buf_size_) {
